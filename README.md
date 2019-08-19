@@ -1,4 +1,4 @@
-# supply_management_system
+# SMS: Supply Management System on the BSV Blockchain
 This a demo of a Supply Management System on the BSV Blockchain.
 It takes the form of a Cross-platform application (Android/iOS/Browser/Desktop) with wallet included.
 It allows to create projects, in which you can track items by their id and location.
