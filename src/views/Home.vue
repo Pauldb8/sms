@@ -25,7 +25,7 @@
               <img
                 src="https://images.unsplash.com/photo-1562587062-e2f449387ed7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
               />
-              <ion-card-header>
+              <ion-card-header class="bg-white">
                 <ion-card-subtitle text-center>Fish arrived at port</ion-card-subtitle>
                 <ion-card-title text-center>Fisheries</ion-card-title>
               </ion-card-header>
@@ -41,6 +41,19 @@
               <ion-card-header>
                 <ion-card-subtitle text-center>Just arrived in China</ion-card-subtitle>
                 <ion-card-title text-center>Metal material</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-card>
+              <img
+                src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1256&q=80"
+              />
+              <ion-card-header>
+                <ion-card-subtitle text-center>Departed from Ecuador</ion-card-subtitle>
+                <ion-card-title text-center>Coffee beans</ion-card-title>
               </ion-card-header>
             </ion-card>
           </ion-col>
@@ -129,7 +142,8 @@ ion-fab-button {
   animation: 5s ease-out 0s 1 slideLeft;
 }
 ion-card {
-  background: linear-gradient(180deg, white, $light) !important;
+  //background: linear-gradient(180deg, white, $light) !important;
+  background: #ffffff99 !important;
 
   img {
     max-height: 150px;
