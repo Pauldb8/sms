@@ -1,0 +1,7 @@
+{
+  "appId": "com.supplyms",
+  "appName": "Supply Management System",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}

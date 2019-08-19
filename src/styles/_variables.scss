@@ -2,3 +2,15 @@ $primary : #292a28;
 $medium : #9ea0a4;
 $dark: #292a28;
 $light:#f5f4f8; 
+$accent: linear-gradient(to right top, #124e78, #357494, #5e9aaf, #8cc2cb, #bee9e8);
+$accent-rgb: 146,220,229;
+
+.ion-color-accent {
+  --ion-color-base: #92DCE5;
+  --ion-color-base-rgb: 146,220,229;
+  --ion-color-contrast: var(--ion-color-accent-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-accent-contrast-rgb);
+  --ion-color-shade: var(--ion-color-accent-shade);
+  --ion-color-tint: var(--ion-color-accent-tint);
+  --ion-color-base: linear-gradient(to right top, #124e78, #357494, #5e9aaf, #8cc2cb, #bee9e8);
+}
