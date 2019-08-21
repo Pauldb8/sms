@@ -116,6 +116,7 @@ export default {
   data: function() {
     return {
       privateKey: null,
+      publicKey: null,
       showQRCode: false,
       address: "",
       qrcode: "",
@@ -133,12 +134,20 @@ export default {
     getPrivateKey() {
       if (localStorage.privateKey) {
         this.privateKey = localStorage.privateKey;
+        this.publicKey = new datapay.bsv.PublicKey.fromPrivateKey(
+          new datapay.bsv.PrivateKey.fromWIF(this.privateKey)
+        );
+        localStorage.publicKey = this.publicKey.toHex();
         //console.log("My private key is: " + this.privateKey);
       } else {
         console.log("false");
         const newPrivateKey = new datapay.bsv.PrivateKey.fromRandom();
         localStorage.privateKey = newPrivateKey;
         this.privateKey = localStorage.privateKey;
+        this.publicKey = new datapay.bsv.PublicKey.fromPrivateKey(
+          new datapay.bsv.PrivateKey.fromWIF(this.privateKey)
+        );
+        localStorage.publicKey = this.publicKey.toHex();
       }
     },
     getAddress() {

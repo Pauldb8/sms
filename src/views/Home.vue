@@ -2,62 +2,51 @@
   <div class="ion-page">
     <!-- Main content -->
     <div class="splash">
-      <!-- Splash screen -->
       <div class="bg-image">&nbsp;</div>
       <h1 class="logo" text-center>SMS</h1>
       <h2 class="slogan" text-center>
         Supply Management System
         <br />
-        <span color="medium">on the public Blockchain</span>
+        <span color="medium">on the BSV Blockchain</span>
       </h2>
     </div>
     <ion-content no-padding class="main">
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" v-on:click="create()">
         <ion-fab-button class="create_button ion-color-accent" color="accent">
-          <ion-icon name="add"></ion-icon>
+          <ion-icon name="add" class="md hydrated" v-bind:class="{ editing: isCreating }"></ion-icon>
         </ion-fab-button>
       </ion-fab>
       <my-header></my-header>
       <ion-grid>
-        <ion-row>
-          <ion-col>
-            <ion-card>
-              <img
-                src="https://images.unsplash.com/photo-1562587062-e2f449387ed7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
-              />
-              <ion-card-header class="bg-white">
-                <ion-card-subtitle text-center>Fish arrived at port</ion-card-subtitle>
-                <ion-card-title text-center>Fisheries</ion-card-title>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-card>
-              <img
-                src="https://images.unsplash.com/photo-1520697517317-6767553cc51a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-              />
-              <ion-card-header>
-                <ion-card-subtitle text-center>Just arrived in China</ion-card-subtitle>
-                <ion-card-title text-center>Metal material</ion-card-title>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-card>
-              <img
-                src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1256&q=80"
-              />
-              <ion-card-header>
-                <ion-card-subtitle text-center>Departed from Ecuador</ion-card-subtitle>
-                <ion-card-title text-center>Coffee beans</ion-card-title>
-              </ion-card-header>
-            </ion-card>
-          </ion-col>
-        </ion-row>
+        <transition name="list">
+          <ion-row v-if="isCreating">
+            <ion-col>
+              <ion-card>
+                <img :src="newProject.picture" v-on:click="nextPicture()" />
+                <ion-card-header>
+                  <ion-card-subtitle text-center>{{ newProject.status }}</ion-card-subtitle>
+                  <ion-card-title text-center v-if="isCreating">
+                    <input v-model="newProject.name" v-on:keyup.enter="save()" ref="new_project" />
+                  </ion-card-title>
+                  <ion-card-title text-center v-else>{{ newProject.name }}</ion-card-title>
+                </ion-card-header>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </transition>
+        <transition-group name="list">
+          <ion-row v-for="(project) in projects" v-bind:key="project.name">
+            <ion-col>
+              <ion-card v-on:click="openProject(project.id)">
+                <img :src="project.picture" />
+                <ion-card-header>
+                  <ion-card-subtitle text-center>{{ project.status }}</ion-card-subtitle>
+                  <ion-card-title text-center>{{ project.name }}</ion-card-title>
+                </ion-card-header>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </transition-group>
       </ion-grid>
     </ion-content>
     <footer-toolbar></footer-toolbar>
@@ -65,8 +54,110 @@
 </template>
 
 <script>
+const datapay = require("datapay");
+import { Project } from "../models/Project";
+import axios from "axios";
+import lodash from "lodash";
+import { lstat } from "fs";
+const defaultPic =
+  "https://images.unsplash.com/photo-1483546363825-7ebf25fb7513?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80;";
+
 export default {
-  name: "home"
+  name: "home",
+  data: function() {
+    return {
+      i: 0,
+      isCreating: false,
+      newProject: new Project(1, "New project", "In creation", this.defaultPic),
+      unsplash_pictures: []
+    };
+  },
+  methods: {
+    create() {
+      this.isCreating = !this.isCreating;
+    },
+    save() {
+      this.newProject.id = this.$store.state.next_project_id;
+      this.newProject.status = "Created";
+      this.getImage();
+      this.$store.commit("addProject", this.newProject);
+      this.isCreating = !this.isCreating;
+      this.broadcastProject(this.newProject);
+
+      this.$store.commit("increment_project_id");
+
+      this.newProject = new Project(
+        this.$store.state.next_project_id,
+        "Coffee beans",
+        "In creation",
+        this.defaultPic
+      );
+    },
+    openProject(project_id) {
+      if (!this.isCreating) this.$router.push("/projects/" + project_id);
+    },
+    broadcastProject(project) {
+      const tx = {
+        safe: true,
+        data: [
+          "1H88Ko11eoL3A2ATNCAyJYYukytk69XzH7",
+          "" + localStorage.publicKey,
+          "PROJECT",
+          "" + project.id,
+          "" + project.name,
+          "" + project.status,
+          "" + project.picture
+        ],
+        pay: { key: localStorage.privateKey }
+      };
+      new datapay.send(tx, function(err, res) {
+        console.log(res);
+      });
+    },
+    loadProjects() {
+      this.$store.dispatch("loadProjects");
+    },
+    getImage() {
+      if (this.newProject.name.length >= 3) {
+        var url =
+          "https://api.unsplash.com/search/photos?query=" +
+          this.newProject.name +
+          "&client_id=4a1535f360a9b54048af43c59b745451ebb6aad7c889edc56c6a30ae2d87e30f";
+        axios.get(url).then(response => {
+          this.newProject.picture = response.data.results[this.i].urls.regular;
+          this.unsplash_pictures = response.data.results;
+          console.log(this.newProject.picture);
+        });
+      } else {
+        this.newProject.picture = this.defaultPic;
+      }
+    },
+    getImageFn: function() {
+      this.getImage();
+    },
+    nextPicture() {
+      this.i++;
+      this.newProject.picture = this.unsplash_pictures[this.i].urls.regular;
+      console.log(this.nextProject.picture);
+      console.log(this.unsplash_pictures[this.i]);
+    }
+  },
+  mounted() {
+    this.loadProjects();
+  },
+  watch: {
+    "newProject.name": function(oldProject, newerProject) {
+      this.debouncedGetImage(newerProject);
+    }
+  },
+  created: function() {
+    this.debouncedGetImage = _.debounce(this.getImageFn, 500);
+  },
+  computed: {
+    projects() {
+      return this.$store.state.projects;
+    }
+  }
 };
 </script>
 
@@ -140,6 +231,14 @@ h2.slogan span {
 ion-fab-button {
   --ion-background-color: $accent !important;
   animation: 5s ease-out 0s 1 slideLeft;
+
+  ion-icon {
+    transform: rotate(0deg);
+    transition: transform 0.5s;
+  }
+  ion-icon.editing {
+    transform: rotate(-45deg);
+  }
 }
 ion-card {
   //background: linear-gradient(180deg, white, $light) !important;
@@ -149,10 +248,48 @@ ion-card {
     max-height: 150px;
     object-fit: cover;
   }
+
+  input {
+    background: transparent;
+    text-align: center;
+    border: none;
+  }
+}
+ion-row {
+  transition: all 1s;
+}
+.slide-list-move {
+  transition: transform 1s;
+}
+.list-enter-active,
+.list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateX(30px);
 }
 ion-footer {
   animation: 5s ease-out 0s 1 slideUp;
 }
+/* Les animations d'entrée (« enter ») et de sortie (« leave »)  */
+/* peuvent utiliser différentes fonctions de durée et de temps.  */
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-enter
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(20px);
+  opacity: 0;
+}
+.slide-fade-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
+}
+
 /* KeyFrames */
 @keyframes zoomInFromOut {
   0% {

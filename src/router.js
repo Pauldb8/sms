@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Home from './views/Home.vue';
 import Wallet from './views/Wallet.vue';
 import Me from './views/Me.vue';
+import Projects from './views/Projects.vue';
 import { IonicVueRouter } from '@ionic/vue';
 
 Vue.use(IonicVueRouter);
@@ -30,6 +31,11 @@ export default new IonicVueRouter({
       path: '/me',
       name: 'me',
       component: Me
+    },
+    {
+      path: '/projects/:project_id',
+      name: 'projectspage',
+      component: Projects
     }
   ]
 });

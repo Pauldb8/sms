@@ -18,6 +18,8 @@
             <br />
             <br />
             <a class="ion-color-accent" @click="update()">Save</a>
+            <br />
+            {{ count }}
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -91,6 +93,11 @@ export default {
       console.log("User exists");
     } else {
       this.user = new User("", "");
+    }
+  },
+  computed: {
+    count() {
+      return this.$store.state.count;
     }
   }
 };
