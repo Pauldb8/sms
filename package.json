@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@capacitor/android": "^1.1.1",
     "@capacitor/cli": "^1.1.1",
     "@capacitor/core": "^1.1.1",
     "@ionic/core": "^4.6.1",
@@ -21,7 +22,9 @@
     "npm": "^6.10.0",
     "qrcode": "^1.4.1",
     "unsplash-js": "^5.0.0",
+    "v-clipboard": "^2.2.2",
     "vue": "^2.6.10",
+    "vue-qrcode-reader": "^2.0.3",
     "vue-router": "^3.0.3",
     "vuex": "^3.1.1"
   },

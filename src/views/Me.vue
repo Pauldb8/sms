@@ -12,14 +12,12 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col text-center class="bg-white">
+          <ion-col text-center class="bg-white four-borders">
             <input placeholder="Name" name="name" v-model="user.name" />
             <input placeholder="Location" name="location" v-model="user.location" />
             <br />
             <br />
             <a class="ion-color-accent" @click="update()">Save</a>
-            <br />
-            {{ count }}
           </ion-col>
         </ion-row>
       </ion-grid>

@@ -21,16 +21,14 @@
             <span :class="{ active: showQRCode }">{{ address }}</span>
           </ion-col>
         </ion-row>
-        <ion-row class="bg-white txs">
-          <ion-col>Most recent transactions</ion-col>
-        </ion-row>
-        <ion-row class="bg-white txs">
-          <ion-col>14 Aout</ion-col>
-          <ion-col>
+        <ion-row class="bg-white txs four-borders">
+          <ion-col size="12">Most recent transactions</ion-col>
+          <ion-col size="2">14 Aout</ion-col>
+          <ion-col size="6">
             Item
             <strong>F2*****H5</strong>
           </ion-col>
-          <ion-col>
+          <ion-col size="4">
             Signed in
             <strong>Brussels, BE</strong>
           </ion-col>
@@ -198,16 +196,17 @@ export default {
         "https://neongenesis.bitdb.network/q/1HcBPzWoKDL2FhCMbocQmLuFTYsiD73u1j/" +
         b64;
       var header = { headers: { key: "1KJPjd3p8khnWZTkjhDYnywLB2yE1w5BmU" } };
-      //console.log("Generated url = " + urlq);
+      console.log("Generated url = " + urlq);
       axios.get(urlq, header).then(response => {
         this.balance = 0;
-        for (var tx in response.data.c) {
-          this.balance += response.data.c[tx].value;
-          //console.log("" + response.data.c[tx].value);
+        for (var tx of response.data.c) {
+          this.balance += tx.value;
+          console.log("" + tx.value);
         }
-        for (var tx in response.data.u) {
-          this.balance += response.data.u[tx].value;
+        for (var tx of response.data.u) {
+          this.balance += tx.value;
         }
+        this.$store.commit("setBalance", this.balance); //Store balance in satoshis
         this.balance = (this.balance / 100000000).toFixed(8);
         this.balanceBlock.update(this.balance);
       });

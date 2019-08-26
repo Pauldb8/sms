@@ -1,6 +1,6 @@
 export class Project {
 
-    id = 0;
+    id = "";
     name = "My new project";
     status = "Created";
     picture = "";
